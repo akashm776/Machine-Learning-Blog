@@ -1,0 +1,149 @@
+---
+title: "Probability Concepts used in Machine Learning"
+title-block-banner: true
+description: "Introduction to theoretical probability concepts and an example of Naive Bayes."
+categories: [Naive Bayes, Supervised Learning]
+author: "Akash Mittal"
+date: "11/13/2023"
+---
+
+
+## Motivation to Study Probability Concepts for Machine Learning {.larger}
+
+Machine Learning and Artificial Intelligence are the new buzzwords of the 21st century. Eventhough in casual conversations Machine Learning and Artificial Intellegence are used intechangably, Machine Learning is actually defined to be a sub branch of Artificial Intelligence.
+
+According to IBM, one of the leading industrial researchers of AI and ML, *Machine Learning can be broadly defined as the capability of a machine to imitate human behavior.* 
+
+But there are myriad of human behaviors, idiosyncrasies that the machine could try to imitate, so which one is Machine Learning trying to emulate. Broadly speaking machine learning is trying to capture a human's ability to adapt and learn from their previous experiences and apply those lessons in new unforseen experiences.
+
+In the domain of Machine Learning this translates to the following
+
+_Experience = Data_
+
+_Goal: Learn from past data trends in order to predict future data values._
+
+But as we are all familiar with the act of applying from previous experiences to new experiences is not a straightforward process. There is a degree of uncertanity since every experience is different. Undersatnding this uncertanity is crucial in the domain of Machine Learning, and this is where Probabilty Theory comes in...
+
+_**Probability Theory can broadly be defined as the mathematical study of uncertainty.**_
+
+## Defining Probability Concepts Used in Machine Learning {.larger}
+
+### Probability Space 
+When one thinks about probability we often think about the probability of an event of uncertain nature taking place. Therefore, in order to discuss probability theory formally, let's first clarify what the possible events are to which we would like to attach probability.
+
+Formally _Probability Space_ refers to these three spaces
+
+1. **$\Omega$**: The space of possible outcomes (Also know as Outcome Space)
+
+2. **F**: The space of measurable events (Also known as the Event Space)
+
+3. **P**: The probability measure (Probability Distribution) which maps an event in the Event Space to a real number between 0 and 1.
+
+Another concept that is closely associated to Probability Theory is the concept of **_Random Variable_**. 
+
+### Random Variables
+
+Random Variable is a bit of a misnomer. They are actually not a variables, but are functions that map outcomes (in the outcome space) to real values (notated as a capital letter). Random variables allows one to abstract away from the formal notion of event space hence allowing one to define random variables that capture the appropriate events.
+
+A popular notation seen in elementary proabbility course is the following: **_$P(X = a)$_**
+
+This means the probability of a random variable $X$ taking on the value of $a$.
+
+### Distributions
+
+Distribution of a variable formally refers to the probability of a random variable taking on certain values.
+
+For example if a coin is fair then the distribution of $X$ would be the following:
+
+**_$P(X = Head) = P(X = Tail) = \frac{1}{2}$_**
+
+There are lot of distributions in Probability Theory , but one of the most useful one for Machine Learning is **_Conditional Distributions_**.
+
+Conditional distributions are one of the primary concept in probability theory for working with uncertainty. They specify the distribution of a random variable when the value of another random variable is known (or more generally, when some event is known to be true). Conditional Probability is used as follows:
+
+Conditional Probability of $X = a$ given $Y = b$ is defined as
+$P(X =a|Y =b)= \frac{P(X = a,Y = b)}{P(Y = b)}$ 
+
+Note: this is not defined when the probability of $Y = b$ is 0
+
+### Indpendence
+
+In probability theory, independence means that the distribution of a random variable does not change on learning the value of another random variable. In machine learning, we often make such assumptions about our data. For example, the training samples are assumed to be drawn independently from some underlying space; the label of sample i is assumed to be independent of the features of sample j.
+
+A random variable $X$ is said to be independent of $Y$ when $P(X) = P(X|Y)$
+
+In Machine Learning independence is mostly used in the conetxt of _conditional independence_, meaning that if we know the value of a random variable (or more generally, a set of random variables), then some other random variables will be independent of each other.
+
+An example of Conditional Independence is the Naive Bayes assumption which says that all features in the input data are independent of each other.
+
+### Example of Naive Bayes
+
+A popular example where Naive bayes is used is a classifier. For this example we will use the very popular Iris dataset which we have used in class. We will use Naive Bayes to classify the iris flowers into different species. Here there is a simplistic assumption made that Sepal length, sepal width, petal length, and petal width are conditionally independent given the species label.
+
+**Loading the dataset**{.smaller}
+
+```{python}
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, confusion_matrix
+import matplotlib.pyplot as plt
+
+data = sns.load_dataset('iris')
+
+print(data.head)
+```
+
+**Visualize the dataset**{.smaller}
+
+```{python}
+#| output: true
+sns.pairplot(data, hue='species', markers=["o", "s", "D"])
+plt.show()
+```
+
+**Preparing the Data**{.smaller}
+```{python}
+#| output: false
+X = data.drop('species', axis=1)
+y = data['species']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+
+**Training the Naive Bayes Classifier**{.smaller}
+```{python}
+#| output: false
+model = GaussianNB()
+model.fit(X_train, y_train)
+```
+
+**Predictions**{.smaller}
+```{python}
+#| output: false
+y_pred = model.predict(X_test)
+```
+
+**Evaluating the Model**{.smaller}
+```{python}
+
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+print(f"Accuracy: {accuracy}")
+print("Confusion Matrix:")
+print(conf_matrix)
+```
+
+**Visualizing the Confusion Matrix**{.smaller}
+```{python}
+#| output: true
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=model.classes_, yticklabels=model.classes_)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix')
+plt.show()
+```
+
+

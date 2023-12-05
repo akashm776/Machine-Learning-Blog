@@ -1,0 +1,81 @@
+---
+title: "Anomaly/outlier detection"
+title-block-banner: true
+description: "Theory and an example related to Anomaly Detection"
+categories: [Isolation Forest, Supervised Learning]
+author: "Akash Mittal"
+date: "11/21/2023"
+---
+
+### Introduction
+
+Anomaly detection, also known as outlier detection, is a branch of machine learning that focuses on identifying anomalies. Anomalies could be defined as instances or patterns in a dataset that deviate significantly from the majority of the data. 
+
+Anomaly detection can be performed in both supervised and unsupervised settings. This can be done learning to distinguish between normal and anomalous instances in the case of supervised learning. In the case for unsupervised learning the algorithm works with unlabeled data and aims to identify patterns that deviate from the norm without prior knowledge of anomalies.
+
+Common Approaches taken for anomaly detection are the following:
+
+1. Statistical Methods: These methods often involve defining a statistical model   for the normal behavior of the data and identifying instances that significantly deviate from this model.
+
+2. Machine Learning Models: Machine learning models, such as Isolation Forests, One-Class SVM (Support Vector Machines), and Autoencoders, can be used for anomaly detection.
+
+3. Density-Based Methods: These methods identify anomalies as instances that have lower density compared to their neighbors. DBSCAN (Density-Based Spatial Clustering of Applications with Noise) is an example of a density-based approach.
+
+Common metrics for evaluating anomaly detection models include precision, recall, F1 score, and the area under the Receiver Operating Characteristic (ROC) curve. 
+
+One common aspect in anomaly detection that is different from other optimzation related machine learning methods is the setting of an appropriate threshold. The threshold determines the point beyond which instances are considered anomalies. Often visual reprsentations can help identify this. The choice of the threshold often involves trade-offs between false positives and false negatives.   
+
+### Example of Anomaly Detection using Isolation Forest
+
+In this example, the tips dataset which is a preloaded seaborn dataset is used. which can easily be obtained by following the just the code below.
+
+**Load Dataset**
+```{python}
+#| output: true
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.ensemble import IsolationForest
+import matplotlib.pyplot as plt
+
+tips = sns.load_dataset('tips')
+
+tips.head()
+```
+
+**Visualize the Dataset**
+```{python}
+sns.scatterplot(x='total_bill', y='tip', data=tips)
+plt.title('Scatter Plot of Total Bill vs. Tip')
+plt.xlabel('Total Bill')
+plt.ylabel('Tip')
+plt.show()
+```
+
+**Train the Isolation Forest model and Predict the Anomalies**
+```{python}
+X = tips[['total_bill', 'tip']]
+model = IsolationForest(contamination=0.05, random_state=42)  
+model.fit(X)
+tips['anomaly'] = model.predict(X)
+```
+
+***Visualize the Anomalies**
+
+```{python}
+plt.figure(figsize=(10, 6))
+
+plt.scatter(tips['total_bill'][tips['anomaly'] == 1], tips['tip'][tips['anomaly'] == 1], c='blue', label='Normal')
+
+plt.scatter(tips['total_bill'][tips['anomaly'] == -1], tips['tip'][tips['anomaly'] == -1], c='red', label='Anomaly')
+
+plt.title('Anomaly Detection with Isolation Forest')
+plt.xlabel('Total Bill')
+plt.ylabel('Tip')
+plt.legend()
+plt.show()
+
+```
+
+
+

@@ -1,0 +1,63 @@
+---
+title: "Clustering"
+title-block-banner: true
+description: "Theory and example on Clustering techniques"
+categories: [K-Clustering, Non-Supervised Learning]
+author: "Akash Mittal"
+date: "11/15/2023"
+---
+
+### Introduction:
+Clustering is a type of unsupervised machine learning technique where the goal is to group similar data points together. The goal of clustering is to identify underlying patterns in a dataset without known labels.
+
+Clustering algorithms uses a similarity metric to measure likeness of data points. Common metrics include Euclidean distance, cosine similarity, or other distance measures. A clustering model's is evaluated using metrics like silhouette score or Davies-Bouldin index. However, since clustering is unsupervised, evaluation can be subjective and depends on the context of the problem.
+
+Clustering finds applications in various domains, including customer segmentation, anomaly detection, document clustering, image segmentation, and more. It helps discover hidden patterns and structures in data.
+
+### Methods of Clustering 
+
+1. **Hierarchical Clustering**: Nested clusters that reflect similarity between other clusters. There are two types of Hierarchical Clustering:
+
+    1. Agglomerative / Bottom-Up Clustering, in which we recursively merge similar clusters
+
+    2. Divisive / Top-Down Clustering, in which we recursively sub-divide into dissimilar sub clusters
+
+2. **K-Clustering**: In k-clustering we need to specify the number of clusters we want the data to be grouped into. The algorithm randomly assigns each observation to a cluster and finds the centroid of each cluster. This algorithms iterates through two steps repeatedly until cluster variation cannot be reduced any further.
+    1. Reassign points to the cluster whose centroid is closest
+    2. Calculate new centroid of each cluster
+
+### Example of K-Clustering
+
+For the sake of demonstration I will make our own data in order to show clustering. 
+
+**Creating Data**
+```{python}
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+from sklearn.datasets import make_blobs
+data = make_blobs(n_samples = 200, n_features = 2, centers=4, cluster_std=1.8, random_state=101)
+```
+
+**Visulaize the Data**
+```{python}
+#| output: true
+plt.scatter(data[0][:,0],data[0][:,1],c=data[1], cmap='rainbow')
+```
+
+**Creating Clusters**
+```{python}
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=4)
+kmeans.fit(data[0])
+kmeans.cluster_centers_
+kmeans.labels_
+```
+```{python}
+f, (ax1, ax2) = plt.subplots(1,2, sharey=True, figsize=(10,6))
+ax1.set_title('K-Clustering')
+ax1.scatter(data[0][:,0],data[0][:,1],c=kmeans.labels_,cmap='rainbow')
+ax2.set_title("Original")
+ax2.scatter(data[0][:,0], data[0][:,1], c=data[1],cmap ='rainbow')
+```

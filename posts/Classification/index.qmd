@@ -1,0 +1,83 @@
+---
+title: "Classification"
+title-block-banner: true
+description: "Theory and example about classfication algorithms"
+categories: [Logistic Regression, Supervised Learning] 
+author: "Akash Mittal"
+date: "11/18/2023"
+---
+
+### Introduction to Classifcation Algorithms in Machine Learning
+
+Classification is a type of problem in supervised machine learning where the goal is to predict the class labels of new instances based on past observations. In a classification problem, the algorithm learns from a labeled dataset, where each data point is associated with a specific class label. The trained model can then be used to predict the class labels of unseen or future instances.
+
+There are two types of classfications based on the number of classes:
+
+1. Binary Classification: There are two classes to classify into. Usually the classes are True or False or 0 or 1.
+
+2. Multiclass Classification: In multiclass classification, there are more than two classes.
+
+Some popular classfication algorithms :
+
+1. Logistic Regression: Used for binary classification. It models the probability of an instance belonging to a particular class.
+
+2. Support Vector Machines (SVM): SVM seeks to find a hyperplane that best separates different classes in the feature space. It is effective in both binary and multiclass classification.
+
+3. Decision Trees: Decision trees recursively split the dataset based on features to create a tree-like structure, making decisions at each node to classify instances.
+
+4. k-Nearest Neighbors (k-NN): k-NN classifies instances based on the majority class of their k nearest neighbors in the feature space.
+
+Classfication algorithms are evaluated based on accuracy, precision, recall, F1 score, and the area under the Receiver Operating Characteristic (ROC) curve. But the choice of which metric to choose depends on the specific goals and characteristics of the problem at hand.
+
+### Example of Logistic Regression
+
+In this example I am using Iris dataset which is a popular dataset used in kaggle competitions. In this example we will apply logistic regression to classify iris flowers into two classes (binary classification).
+
+**Loading the Data**
+
+```{python}
+#| output: true
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+import matplotlib.pyplot as plt
+
+iris = sns.load_dataset('iris')
+
+iris.head()
+```
+
+**Visualize the data**
+```{python}
+sns.pairplot(iris, hue='species', markers=["o", "s", "D"], palette='Spectral')
+plt.show()
+```
+
+
+**Creating a Logistic Regression Model**
+```{python}
+iris['target'] = np.where(iris['species'] == 'versicolor', 1, 0)
+X = iris[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
+y = iris['target']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+```
+
+
+**Evaluating the Model**
+```{python}
+#| output: true
+accuracy = accuracy_score(y_test, y_pred)
+classification_rep = classification_report(y_test, y_pred)
+
+print(f"Accuracy: {accuracy}")
+print("Classification Report:\n", classification_rep)
+```

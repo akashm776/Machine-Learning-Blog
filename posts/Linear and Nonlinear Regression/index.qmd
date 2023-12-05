@@ -1,0 +1,103 @@
+---
+title: "Linear and NonLinear Regression"
+title-block-banner: true
+description: "Theory on Linear and Non linear regression and an example of linear regression model."
+categories: [Linear Regression, Supervised Learning]
+author: "Akash Mittal"
+date: "11/17/2023"
+---
+
+### Introduction to Linear Regression
+
+Linear regression is a supervised learning algorithm used for predicting a continuous outcome variable (also called the dependent variable) based on one or more predictor variables (independent variables). There is an assumption of a linear relation between the independent predictor variables and the dependent outcome variables. 
+
+It can be mathematically represented as follows:
+
+$Y = \mathcal{B}_0 + \mathcal{B}_1X_1 +\mathcal{B}_2X_2 + \mathcal{B}_3X_3 + ... + \mathcal{B}_nX_n + \epsilon$ 
+
+where Y is the predicted outcome, $X_1$, $X_2$, ..., $X_n$ are predictor variables, $\mathcal{B}_0, \mathcal{B}_1, \mathcal{B}_2, \ldots , \mathcal{B}_n$ are weights associated to each predicted variables and $\epsilon$ is the error term. 
+
+The goal is to find all $\mathcal{B}_0, \mathcal{B}_1, \mathcal{B}_2, \ldots , \mathcal{B}_n$ that minimize the sum of squared differences between the predicted and actual values (least squares method).
+
+A few assumptions in linear regression other than the linear relationship are the following:
+
+1. Linear Regression assumes that the residuals (the differences between predicted and actual values) are normally distributed
+
+2. The residuals should have constant variance (homoscedasticity).
+
+3. There should be little or no multicollinearity (high correlation) among the predictor variables.
+
+### Introduction to NonLinear Regression
+The relationship between the relationship between the dependent variable and the independent variables is modeled using a nonlinear function. 
+
+This can be mathematically represented as following:
+
+$Y = f(X, \mathcal{B}) +\epsilon$
+
+Similar to linear regression, the objective in nonlinear regression is often to minimize the difference between the predicted values from the model and the actual observed values. Also evaluation metrics for nonlinear regression are similar to those used in linear regression, such as Mean Squared Error (MSE), Root Mean Squared Error (RMSE), Mean Absolute Error (MAE) and etc. 
+
+Some Types of NonLinear relationships can be the following:
+
+1. Quadratic 
+
+2. Logarithmic 
+
+3. Exponential
+
+### Example of Linear Regression
+For this examples we will look real estate houses and their prices, one of the quintessential applications of Linear Regression. The goal is to predict the price of a house based on some features of a house. This data is a dataset taken from Kaggle as toy example to show this concept.
+
+**Loading the Dataset**
+```{python}
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
+%matplotlib inline
+```
+
+```{python}
+USAhousing = pd.read_csv('USA_Housing.csv')
+USAhousing.head()
+```
+
+**Visualizing the data (which factors are linearly related to Price**
+```{python}
+#| output: true
+sns.pairplot(USAhousing, y_vars = 'Price')
+```
+
+**Training Linear Regression Model**
+```{python}
+#| output: false
+X = USAhousing[['Avg. Area Income', 'Avg. Area House Age', 'Avg. Area Number of Rooms', 'Avg. Area Number of Bedrooms', 'Area Population']]
+y = USAhousing['Price']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.4, random_state = 101)
+lm = LinearRegression()
+lm.fit(X_train, y_train)
+```
+
+**Model Evaluation - The weights associated to the features**
+```{python}
+#| output: true
+print(lm.intercept_)
+coeff_df = pd.DataFrame(lm.coef_, X.columns,columns=['Coefficent'])
+coeff_df
+```
+
+**Predictions from the Model**
+```{python}
+predictions = lm.predict(X_test)
+plt.scatter(y_test,predictions)
+```
+
+**Metrics to Evaluate the Model**
+```{python}
+print('Mean Squared Error = ', metrics.mean_squared_error(y_test,predictions))
+```
+
+
+
